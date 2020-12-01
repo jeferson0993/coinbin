@@ -135,6 +135,8 @@ Distribuído sob a licença MIT. Veja a [`LICENÇA`](https://github.com/jeferson
 
 Jeferson Ferreira - jeferson0993@gmail.com
 
+<!-- Reconhecimentos -->
+## Reconhecimentos
 [Link para o projeto original](https://github.com/OutCast3k/coinbin/)
 
 
