@@ -64,19 +64,38 @@ $(document).ready(function() {
 					$("#openLogin").hide();
 					$("#openWallet").removeClass("hidden").show();
 
+					if (localStorage) {
+						if (localStorage.getItem('bookmarks') !== null) {
+							var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+							if (email === bookmarks.email && pass === bookmarks.pass) {
+								console.log(email,bookmarks.email,pass,bookmarks.pass)
+								$("#addBookmarks").html("Remover favorito");
+							} else $("#addBookmarks").html("Favoritar");
+						} else $("#addBookmarks").html("Favoritar");
+					}					
+
 					walletBalance();
 				} else {
-					$("#openLoginStatus").html("Your passwords do not match!").removeClass("hidden").fadeOut().fadeIn();
+					$("#openLoginStatus").html("Suas senhas não conferem!").removeClass("hidden").fadeOut().fadeIn();
 				}
 			} else {
-				$("#openLoginStatus").html("Your password must be at least 10 chars long").removeClass("hidden").fadeOut().fadeIn();
+				$("#openLoginStatus").html("Sua senha deve ter pelo menos 10 caracteres").removeClass("hidden").fadeOut().fadeIn();
 			}
 		} else {
-			$("#openLoginStatus").html("Your email address doesn't appear to be valid").removeClass("hidden").fadeOut().fadeIn();
+			$("#openLoginStatus").html("Seu endereço de e-mail não parece ser válido").removeClass("hidden").fadeOut().fadeIn();
 		}
 
 		$("#openLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
 	});
+
+	$("#btnBookmark").click(function () {
+		var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+		console.log(bookmarks);
+		$("#openEmail").val(bookmarks.email);
+		$("#openPass").val(bookmarks.pass);
+		$("#openPassConfirm").val(bookmarks.pass);
+		$("#openBtn").click();
+	})
 
 	$("#walletLogout").click(function(){
 		$("#openEmail").val("");
@@ -130,6 +149,23 @@ $(document).ready(function() {
 	$("#walletShowKeys").click(function(){
 		$("#walletKeys").removeClass("hidden");
 		$("#walletSpend").removeClass("hidden").addClass("hidden");
+	});
+
+	$("#addBookmarks").click(function(){
+		if ($("#addBookmarks").html() === "Favoritar") {
+			var bookmark = {
+				email : $("#openEmail").val(),
+				pass : $("#openPass").val()
+			};
+			localStorage.setItem("bookmarks", JSON.stringify(bookmark));
+			$("#addBookmarks").html("Remover favorito");
+			$('#btnBookmark').removeClass('hidden').show();
+		} else {
+			localStorage.removeItem("bookmarks");
+			$("#addBookmarks").html("Favoritar");
+			$('#btnBookmark').addClass('hidden').hide();
+		}
+		console.log(bookmark);
 	});
 
 	$("#walletBalance, #walletAddress, #walletQrCode").click(function(){
@@ -210,7 +246,7 @@ $(document).ready(function() {
 
 				}, signed);
 			} else {
-				$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html("You have a confirmed balance of "+dvalue+" BTC unable to send "+total+" BTC").fadeOut().fadeIn();
+				$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html("Você tem um saldo confirmado de" + dvalue + "BTC incapaz de enviar" + total + "BTC").fadeOut().fadeIn();
 				thisbtn.attr('disabled',false);
 			}
 
@@ -271,7 +307,7 @@ $(document).ready(function() {
 				$("#modalWalletConfirm").modal("show");
 				$("#walletConfirmSend").attr('disabled',false);
 			} else {
-				$("#walletSendStatus").removeClass("hidden").html("You are trying to spend "+total+' but have a balance of '+balance);
+				$("#walletSendStatus").removeClass("hidden").html("Você está tentando gastar" + total + ', mas tem um saldo de' + balance);
 			}
 		} else {
 			$("#walletSpend .has-error").fadeOut().fadeIn();
@@ -716,7 +752,7 @@ $(document).ready(function() {
 			}
 			$("#feesestnewtx").attr('est','');
 		} else {
-			$("#transactionCreateStatus").removeClass("hidden").html("One or more input or output is invalid").fadeOut().fadeIn();
+			$("#transactionCreateStatus").removeClass("hidden").html("Uma ou mais entradas ou saídas são inválidas").fadeOut().fadeIn();
 		}
 	});
 
@@ -894,7 +930,7 @@ $(document).ready(function() {
 			$("#inputs .txidRemove, #inputs .txidClear").click();
 		}
 
-		$("#redeemFromBtn").html("Please wait, loading...").attr('disabled',true);
+		$("#redeemFromBtn").html("Aguarde, carregando ...").attr('disabled',true);
 
 		var host = $(this).attr('rel');
 
@@ -1090,7 +1126,7 @@ $(document).ready(function() {
 					addInput($(o).find("address").text(), $(o).find("value").text());
 				});
 
-				$("#redeemFromBtn").html("Load").attr('disabled',false);
+				$("#redeemFromBtn").html("carregar").attr('disabled',false);
 				totalInputAmount();
 				validateOutputAmount();
 
@@ -1115,7 +1151,7 @@ $(document).ready(function() {
 				});
 			}
 
-			$("#redeemFromBtn").html("Load").attr('disabled',false);
+			$("#redeemFromBtn").html("carregar").attr('disabled',false);
 			totalInputAmount();
 
 			mediatorPayment(redeem);
@@ -1150,7 +1186,7 @@ $(document).ready(function() {
 				}
 			},
 			complete: function(data, status) {
-				$("#redeemFromBtn").html("Load").attr('disabled',false);
+				$("#redeemFromBtn").html("carregar").attr('disabled',false);
 				totalInputAmount();
 			}
 		});
@@ -1183,7 +1219,7 @@ $(document).ready(function() {
 				}
 			},
 			complete: function(data, status) {
-				$("#redeemFromBtn").html("Load").attr('disabled',false);
+				$("#redeemFromBtn").html("carregar").attr('disabled',false);
 				totalInputAmount();
 			}
 		});
@@ -1219,7 +1255,7 @@ $(document).ready(function() {
 				}
 			},
 			complete: function(data, status) {
-				$("#redeemFromBtn").html("Load").attr('disabled',false);
+				$("#redeemFromBtn").html("carregar").attr('disabled',false);
 				totalInputAmount();
 			}
 		});
@@ -1253,7 +1289,7 @@ $(document).ready(function() {
 				}
 			},
 			complete: function(data, status) {
-				$("#redeemFromBtn").html("Load").attr('disabled',false);
+				$("#redeemFromBtn").html("carregar").attr('disabled',false);
 				totalInputAmount();
 			}
 		});
@@ -1329,7 +1365,7 @@ $(document).ready(function() {
 			data: {'rawtx':$("#rawTransaction").val()},
 			dataType: "xml",
 			error: function(data) {
-				$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(" There was an error submitting your request, please try again").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
+				$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(" Ocorreu um erro ao enviar sua solicitação, tente novamente").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
 			},
                         success: function(data) {
 				$("#rawTransactionStatus").html(unescape($(data).find("response").text()).replace(/\+/g,' ')).removeClass('hidden');
@@ -1355,7 +1391,7 @@ $(document).ready(function() {
 			data: {'rawtx':$("#rawTransaction").val()},
 			dataType: "xml",
 			error: function(data) {
-				$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(" There was an error submitting your request, please try again").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
+				$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(" Ocorreu um erro ao enviar sua solicitação, tente novamente").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
 			},
                         success: function(data) {
 				$("#rawTransactionStatus").html(unescape($(data).find("response").text()).replace(/\+/g,' ')).removeClass('hidden');
@@ -1831,7 +1867,7 @@ $(document).ready(function() {
 			var qrcode = new QRCode("qrcode", {width:w, height:w});
 			qrstr = $(ta).val();
 			if(qrstr.length > 1024){
-				$("#qrcode").html("<p>Sorry the data is too long for the QR generator.</p>");
+				$("#qrcode").html("<p>Desculpe, os dados são muito longos para o gerador de QR.</p>");
 			}
 		} else {
 			var qrcode = new QRCode("qrcode");
@@ -1925,9 +1961,9 @@ $(document).ready(function() {
                 explorer_addr = "https://chain.so/address/DOGE/";
             }
 
-			$("#statusSettings").addClass("alert-success").removeClass("hidden").html("<span class=\"glyphicon glyphicon-ok\"></span> Settings updates successfully").fadeOut().fadeIn();	
+			$("#statusSettings").addClass("alert-success").removeClass("hidden").html("<span class=\"glyphicon glyphicon-ok\"></span> Configurações atualizadas com sucesso").fadeOut().fadeIn();	
 		} else {
-			$("#statusSettings").addClass("alert-danger").removeClass("hidden").html("There is an error with one or more of your settings");	
+			$("#statusSettings").addClass("alert-danger").removeClass("hidden").html("Há um erro com uma ou mais de suas configurações");	
 		}
 	});
 
@@ -2285,4 +2321,11 @@ $(document).ready(function() {
 		return true;
 	};
 
+	if (localStorage) {
+		console.log("localStorage: ", localStorage.getItem('bookmarks'));
+		if (localStorage.getItem('bookmarks') !== null) {
+			$('#btnBookmark').removeClass('hidden').show();
+		}
+	}
+	
 });
